@@ -41,7 +41,9 @@ h1,h2,h3{font-family:var(--disp);letter-spacing:-.03em;line-height:1.02;text-wra
 .btn.ghost:hover{background:var(--ink);color:#fff}
 .cta-row{display:flex;gap:14px;flex-wrap:wrap;margin:30px 0 0}
 /* hero */
-.hero{padding:clamp(60px,10vh,120px) 0 0;border-bottom:1px solid var(--hair)}
+.hero{padding:clamp(48px,8vh,96px) 0 0;border-bottom:1px solid var(--hair)}
+.wordmark{margin:0 0 34px}
+.wordmark img{max-width:min(340px,72vw);height:auto}
 .hero-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:clamp(26px,4vw,60px);
   align-items:center;margin-top:26px}
 .figure{margin:0;border:1px solid var(--hair);border-radius:14px;background:var(--card);overflow:hidden}
