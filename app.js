@@ -1,4 +1,4 @@
-/* Minuta landing — progressive enhancement only. No framework, no build. */
+/* Minuta landing: progressive enhancement only. No framework, no build. */
 (function () {
   "use strict";
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -23,7 +23,7 @@
     });
   });
 
-  /* Smooth scroll (Lenis) + reveals (GSAP) — both optional */
+  /* Smooth scroll (Lenis) + reveals (GSAP): both optional */
   try {
     if (!reduced && window.Lenis) {
       var lenis = new Lenis({ lerp: 0.11 });
@@ -63,9 +63,44 @@
   }
   if (reduced) document.body.classList.add("no-motion");
 
-  /* Hairline cue figure: thin caption-cue bars that answer the pointer.
-     One loop, pauses offscreen, rests when idle. Inspired by hairline. */
+  /* Hairline figure (real thing, auto-playing). Falls back to the
+     hand-drawn cue canvas if the CDN is unreachable. */
   (function () {
+    var host = document.getElementById("hl");
+    if (!host) { initCuesFallback(); return; }
+    function fail() {
+      var cv = document.getElementById("cues");
+      if (cv) { cv.hidden = false; host.style.display = "none"; }
+      initCuesFallback();
+    }
+    if (reduced) {
+      try {
+        import("https://cdn.jsdelivr.net/npm/@lucasmarkes/hairline@latest/+esm").then(function (m) {
+          m.phosphor(host, { play: false, intensity: 0.5,
+            label: "Dot matrix wordmark field at rest" });
+        }).catch(fail);
+      } catch (e) { fail(); }
+      return;
+    }
+    var started = false;
+    function boot() {
+      if (started) return; started = true;
+      import("https://cdn.jsdelivr.net/npm/@lucasmarkes/hairline@latest/+esm").then(function (m) {
+        m.phosphor(host, { play: true, intensity: 0.7,
+          label: "Dot matrix that plays a loop. Your pointer paints phosphor trails." });
+      }).catch(fail);
+    }
+    if ("IntersectionObserver" in window) {
+      var once = new IntersectionObserver(function (es) {
+        if (es[0].isIntersecting) { boot(); once.disconnect(); }
+      });
+      once.observe(host);
+    } else { boot(); }
+  })();
+
+  /* Hand-drawn cue-canvas fallback: thin transcript-cue bars that answer
+     the pointer. One loop, pauses offscreen, rests when idle. */
+  function initCuesFallback() {
     var cv = document.getElementById("cues");
     if (!cv || !cv.getContext) return;
     var ctx = cv.getContext("2d");
@@ -136,5 +171,5 @@
     if ("ResizeObserver" in window) new ResizeObserver(build).observe(cv);
     window.addEventListener("resize", build);
     build(); kick();
-  })();
+  }
 })();

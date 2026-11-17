@@ -1,4 +1,4 @@
-# Minuta — llms.txt
+# Minuta: llms.txt
 
 Minuta turns YouTube channels into private, timestamped knowledge bases
 (transcript library + hybrid search + REST/MCP) that people and AI agents
@@ -7,17 +7,17 @@ Base URL: the operator's `PUBLIC_BASE_URL`. Auth: `Authorization: Bearer <key>` 
 
 ## REST
 
-- `GET /healthz`, `GET /readyz` — liveness (no auth on healthz).
-- `GET /v1/search?q=...&limit=` — hybrid search, timestamped passages with `?t=` links. Scope: read.
-- `GET /v1/videos/{youtube_id}/transcript?mode=paged&cursor=&page_size=` — segments with start_ms/end_ms. Scope: read.
-- `POST /admin/channels {"input": "<handle|channel_id|url>"}` — discover. Scope: admin.
-- `POST /admin/videos/{youtube_id}/refresh` — requeue fetch. Scope: admin.
-- `POST /admin/keys {"name":..., "scopes":["read"]}` — mint scoped keys. Scope: admin.
+- `GET /healthz`, `GET /readyz`: liveness (no auth on healthz).
+- `GET /v1/search?q=...&limit=`: hybrid search, timestamped passages with `?t=` links. Scope: read.
+- `GET /v1/videos/{youtube_id}/transcript?mode=paged&cursor=&page_size=`: segments with start_ms/end_ms. Scope: read.
+- `POST /admin/channels {"input": "<handle|channel_id|url>"}`: discover. Scope: admin.
+- `POST /admin/videos/{youtube_id}/refresh`: requeue fetch. Scope: admin.
+- `POST /admin/keys {"name":..., "scopes":["read"]}`: mint scoped keys. Scope: admin.
 
 ## MCP (Streamable HTTP, same Bearer auth)
 
-- Tool `search_transcripts(query, limit)` — timestamped passages.
-- Tool `get_transcript(video_id, cursor, page_size)` — paged segments.
+- Tool `search_transcripts(query, limit)`: timestamped passages.
+- Tool `get_transcript(video_id, cursor, page_size)`: paged segments.
 
 ## Rules for answering from this library
 

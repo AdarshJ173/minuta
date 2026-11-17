@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Minuta — Turn YouTube into Your Knowledge Base</title>
+<title>Minuta: Turn YouTube into Your Knowledge Base</title>
 <meta name="description" content="Minuta is the open-source way to turn YouTube channels into private, timestamped knowledge bases: transcripts, hybrid search, REST + MCP for humans and AI agents.">
 <meta name="keywords" content="youtube transcript library, youtube transcripts api, video knowledge base, mcp server youtube, transcript search, timestamped transcripts, youtube to markdown, rag youtube, private transcript database, apify youtube transcript, yt-dlp subtitles, pgvector transcripts, fastmcp youtube, agent knowledge base, ghostwriting research youtube, video citation search">
 <link rel="canonical" href="https://adarshj173.github.io/minuta/">
 <meta name="theme-color" content="#FAFAF8">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Minuta">
-<meta property="og:title" content="Minuta — Turn YouTube into Your Knowledge Base">
-<meta property="og:description" content="Point Minuta at the channels you learn from. Every word, timestamped, searchable, citable — for you and your AI agents. Open source (MIT).">
+<meta property="og:title" content="Minuta: Turn YouTube into Your Knowledge Base">
+<meta property="og:description" content="Point Minuta at the channels you learn from. Every word, timestamped, searchable, citable: for you and your AI agents. Open source (MIT).">
 <meta property="og:url" content="https://adarshj173.github.io/minuta/">
 <meta property="og:image" content="https://adarshj173.github.io/minuta/assets/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Minuta — Turn YouTube into Your Knowledge Base">
+<meta name="twitter:title" content="Minuta: Turn YouTube into Your Knowledge Base">
 <meta name="twitter:description" content="Open-source private YouTube transcript library: timestamped transcripts, hybrid search, REST + remote MCP.">
 <meta name="twitter:image" content="https://adarshj173.github.io/minuta/assets/og.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23141412'/%3E%3Ccircle cx='11' cy='16' r='2.4' fill='%23FAFAF8'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23FAFAF8'/%3E%3Ccircle cx='21' cy='16' r='2.4' fill='%23FF4D00'/%3E%3C/svg%3E">
@@ -61,17 +61,22 @@
 <section class="hero" aria-labelledby="hero-title">
   <div class="wrap">
     <p class="eyebrow reveal">Open source · MIT · v0.1.0</p>
-    <h1 id="hero-title" class="display reveal">Turn YouTube into<br>your <em>knowledge base.</em></h1>
-    <p class="lede reveal">Point Minuta at the channels you learn from. It keeps every word,
-      timestamped — so you or any AI agent can answer from them, write like them, think with them.</p>
-    <div class="cta-row reveal">
-      <a class="btn" href="https://github.com/AdarshJ173/minuta">Star on GitHub</a>
-      <a class="btn ghost" href="#how">See how it works</a>
+    <div class="hero-grid reveal">
+      <div>
+        <h1 id="hero-title" class="display">Turn YouTube into<br>your <em>knowledge base.</em></h1>
+        <p class="lede">Point Minuta at the channels you learn from. It keeps every word,
+      timestamped, so you or any AI agent can answer from them, write like them, think with them.</p>
+        <div class="cta-row">
+          <a class="btn" href="https://github.com/AdarshJ173/minuta">Star on GitHub</a>
+          <a class="btn ghost" href="#how">See how it works</a>
+        </div>
+      </div>
+      <figure class="figure" aria-label="Dot matrix that plays on its own. Move your pointer across it.">
+        <div id="hl" data-figure="phosphor"></div>
+        <canvas id="cues" height="180" hidden></canvas>
+        <figcaption>Cue field: live dot matrix. It plays on its own; your pointer paints it.</figcaption>
+      </figure>
     </div>
-    <figure class="figure reveal" aria-label="Transcript cue timeline. Move your pointer across it.">
-      <canvas id="cues" height="180"></canvas>
-      <figcaption>Cue map — 2,285 indexed segments and counting. Move your pointer across it.</figcaption>
-    </figure>
     <dl class="stats reveal">
       <div><dt>216</dt><dd>videos per library</dd></div>
       <div><dt>215</dt><dd>timestamped transcripts</dd></div>
@@ -84,11 +89,11 @@
 <!-- 02 · HOW -->
 <section class="section" id="how" aria-labelledby="how-title">
   <div class="wrap">
-    <p class="eyebrow">01 — How it works</p>
+    <p class="eyebrow">01 · How it works</p>
     <h2 id="how-title" class="h2">Channels in. <em>Answers</em> out.</h2>
     <ol class="steps">
-      <li class="reveal"><span class="n">01</span><h3>Point</h3><p>Give Minuta a handle. Discovery walks the uploads playlist through the official YouTube Data API — metadata only, quota-counted.</p></li>
-      <li class="reveal"><span class="n">02</span><h3>Keep</h3><p>A provider chain extracts timestamped captions — Apify, yt-dlp, youtube-transcript-api, Supadata. Canonical JSON + Markdown land in your private bucket; embeddings in your Postgres.</p></li>
+      <li class="reveal"><span class="n">01</span><h3>Point</h3><p>Give Minuta a handle. Discovery walks the uploads playlist through the official YouTube Data API: metadata only, quota-counted.</p></li>
+      <li class="reveal"><span class="n">02</span><h3>Keep</h3><p>A provider chain extracts timestamped captions: Apify, yt-dlp, youtube-transcript-api, Supadata. Canonical JSON + Markdown land in your private bucket; embeddings in your Postgres.</p></li>
       <li class="reveal"><span class="n">03</span><h3>Ask &amp; make</h3><p>Hybrid search over REST and MCP returns passages with video ID, exact timestamp and watch link. Cite them, draft from them, think with them.</p></li>
     </ol>
     <div class="codeblock reveal">
@@ -103,8 +108,8 @@ PYTHONPATH=src python scripts/backfill.py --max 200</code></pre>
       <h3>Questions, answered</h3>
       <details open><summary>Do I need to pay for transcripts?</summary><p>No. Apify's free plan ($5/mo, no card) covers roughly 7,000 transcripts a month at ~$0.70/1k. The bundled yt-dlp and youtube-transcript-api providers cost $0 where they aren't rate-limited; Supadata adds 100 free credits a month.</p></details>
       <details><summary>Where does my data live?</summary><p>In your infrastructure: canonical files in your private R2 bucket, versions, chunks and embeddings in your Supabase Postgres with pgvector. Minuta's cloud touches nothing of yours.</p></details>
-      <details><summary>Can my AI agent use it?</summary><p>Yes — a remote MCP server plus REST, one Bearer token, scoped keys. Every passage carries citations by construction.</p></details>
-      <details><summary>What if a video has no captions?</summary><p>It's recorded as definitively unavailable — never confused with rate limits, which back off and retry. Nothing is mislabeled.</p></details>
+      <details><summary>Can my AI agent use it?</summary><p>Yes: a remote MCP server plus REST, one Bearer token, scoped keys. Every passage carries citations by construction.</p></details>
+      <details><summary>What if a video has no captions?</summary><p>It's recorded as definitively unavailable: never confused with rate limits, which back off and retry. Nothing is mislabeled.</p></details>
     </div>
   </div>
 </section>
@@ -112,7 +117,7 @@ PYTHONPATH=src python scripts/backfill.py --max 200</code></pre>
 <!-- 03 · AGENTS -->
 <section class="section" id="agents" aria-labelledby="agents-title">
   <div class="wrap">
-    <p class="eyebrow">02 — For agents</p>
+    <p class="eyebrow">02 · For agents</p>
     <h2 id="agents-title" class="h2">Hand any agent the <em>keys.</em></h2>
     <p class="lede">One MCP URL, one token, one paragraph. Paste it into ChatGPT, Claude, or any agent with your question appended.</p>
     <div class="agentbox reveal">
@@ -130,7 +135,7 @@ PYTHONPATH=src python scripts/backfill.py --max 200</code></pre>
 <!-- 04 · CTA -->
 <section class="section cta" id="cta" aria-labelledby="cta-title">
   <div class="wrap">
-    <p class="eyebrow">03 — Start</p>
+     <p class="eyebrow">03 · Start</p>
     <h2 id="cta-title" class="display">Your channels,<br><em>on the record.</em></h2>
     <div class="cta-row">
       <a class="btn" href="https://github.com/AdarshJ173/minuta">Star on GitHub</a>
