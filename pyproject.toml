@@ -1,0 +1,32 @@
+[project]
+name = "minuta"
+version = "0.1.0"
+description = "Your channels, word for word. Private YouTube transcript library with hybrid search, REST + remote MCP."
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "fastapi==0.163.1",
+  "uvicorn[standard]==0.54.0",
+  "fastmcp==4.2.0",
+  "psycopg[binary,pool]==3.3.9",
+  "boto3==1.44.4",
+  "youtube-transcript-api>=1.2.2,<2.0",
+  "yt-dlp==2026.10.26",
+  "fastembed>=0.7.0,<0.8",
+  "pydantic-settings>=2.7,<3",
+  "httpx>=0.28,<1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3", "pytest-asyncio>=0.25", "ruff>=0.8"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501", "B008"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
