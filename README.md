@@ -1,12 +1,8 @@
 <div align="center">
 
-```
-●···●  ●●●  ●···●  ●···●  ●●●●●  ··●··
-●●·●●   ●   ●●··●  ●···●    ●    ·●·●·
-●·●·●   ●   ●·●·●  ●···●    ●    ●●●●●
-●···●   ●   ●··●●  ●···●    ●    ●···●
-●···●  ●●●  ●···●  ●●●●●    ●    ●···●
-```
+<p align="center">
+  <img src="assets/minuta.svg" width="720" alt="MINUTA dot-matrix wordmark">
+</p>
 
 ### THE MINUTES OF EVERY VIDEO
 
