@@ -4,9 +4,11 @@
   <img src="assets/minuta.svg" width="720" alt="MINUTA dot-matrix wordmark">
 </p>
 
-### THE MINUTES OF EVERY VIDEO
+### TURN YOUTUBE INTO YOUR KNOWLEDGE BASE
 
-*Turn any YouTube channel into a private, timestamped, agent-searchable library.*
+*Point Minuta at the channels you learn from. It keeps every word,
+timestamped — so you or any AI agent can answer from them, write like them,
+think with them.*
 
 [Quickstart](#-quickstart) · [Docs](docs/ARCHITECTURE.md) · [Keys](docs/KEYS.md) · [Operations](docs/OPERATIONS.md) · [llms.txt](llms.txt) · [AGENTS.md](AGENTS.md)
 
@@ -20,7 +22,19 @@
 
 ---
 
-> **Minuta** *(n.) — the written minutes of a proceeding. Every word, on the record.*
+> **Minuta** *(n.) — the written minutes of a proceeding. The raw material
+> is the record; the product is what you make with it.*
+
+## ● What you make with it
+
+- **Answers from voices you trust** — ask across 200 videos at once; every
+  claim comes back cited with video, timestamp, and link. No generic AI slop.
+- **Drafts in their voice** — scripts, posts, newsletters, ghostwriting,
+  grounded in what was actually said, phrased the way it was said.
+- **A thinking partner** — refer back for ideas, check what was argued where,
+  build on lines of thought instead of rewatching.
+- **A library that compounds** — new uploads sync automatically; the base only
+  gets more useful.
 
 Point Minuta at a channel. It discovers every upload, extracts timestamped
 transcripts through a resilient provider chain, stores canonical JSON +
@@ -37,7 +51,7 @@ flowchart LR
     PG --> API[REST + MCP]
 ```
 
-## ● Why Minuta
+## ● Why it holds up
 
 | Problem | What Minuta does |
 |---|---|

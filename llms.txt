@@ -1,6 +1,8 @@
 # Minuta — llms.txt
 
-Minuta is a private YouTube transcript library with hybrid search, REST + remote MCP.
+Minuta turns YouTube channels into private, timestamped knowledge bases
+(transcript library + hybrid search + REST/MCP) that people and AI agents
+answer from, write from, and think with.
 Base URL: the operator's `PUBLIC_BASE_URL`. Auth: `Authorization: Bearer <key>` on all routes.
 
 ## REST
