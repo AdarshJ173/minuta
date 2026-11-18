@@ -18,7 +18,11 @@ from minuta.transcripts.base import (
     TranscriptTemporaryError,
     TranscriptUnavailable,
 )
-from minuta.transcripts.remote import SupadataProvider, YouTubeTranscriptApiProvider
+from minuta.transcripts.remote import (
+    SupadataProvider,
+    TranscriptApiProvider,
+    YouTubeTranscriptApiProvider,
+)
 from minuta.transcripts.ytdlp import YtDlpProvider
 
 
@@ -37,6 +41,7 @@ class AuthRequiredFailure(RuntimeError):
 def providers() -> list:
     settings = get_settings()
     available = {
+        "transcriptapi": TranscriptApiProvider(settings.transcript_api_key),
         "apify": ApifyProvider(settings.apify_api_token),
         "ytdlp": YtDlpProvider(),
         "yta": YouTubeTranscriptApiProvider(),

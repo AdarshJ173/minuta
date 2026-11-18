@@ -14,7 +14,7 @@ think with them.*
 
 ![license](https://img.shields.io/badge/license-MIT-black?style=flat-square)
 ![python](https://img.shields.io/badge/python-3.13-black?style=flat-square)
-![tests](https://img.shields.io/badge/tests-41_passing-black?style=flat-square)
+![tests](https://img.shields.io/badge/tests-38_passing-black?style=flat-square)
 ![mcp](https://img.shields.io/badge/MCP-streamable_HTTP-black?style=flat-square)
 ![rag](https://img.shields.io/badge/RAG-hybrid_vector_FTS-black?style=flat-square)
 
@@ -45,7 +45,7 @@ remote MCP — so you, or any AI agent, can search 200 videos as easily as one.
 flowchart LR
     YT[YouTube] -->|Data API: discovery only| D[discover]
     D --> P{provider chain}
-    P -->|apify · ytdlp · yta · supadata| C[canonical doc]
+    P -->|transcriptapi · supadata · apify · ytdlp · yta| C[canonical doc]
     C --> R2[(R2 private bucket)]
     C --> PG[(Supabase + pgvector)]
     PG --> API[REST + MCP]
@@ -83,6 +83,9 @@ curl "$PUBLIC_BASE_URL/v1/search?q=your+question" -H "Authorization: Bearer $REA
 
 **Deploy** — Modal (API + 5-min worker + one-shot backfill) or any Docker host.
 See [docs/OPERATIONS.md](docs/OPERATIONS.md). Typical full-channel cost: **~$0.11**.
+**Paying for speed?** [docs/TURBO.md](docs/TURBO.md) is the paid fastest path:
+realtime transcript API, hosted embeddings, parallel fan-out — under $1 per
+200-video channel after base plans.
 
 ## ● Transcript providers
 
@@ -90,10 +93,13 @@ First configured success wins (`TRANSCRIPT_PROVIDER_ORDER`).
 
 | Provider | Key needed | Notes |
 |---|---|---|
-| `apify` | `APIFY_API_TOKEN` (free $5/mo, no card) | Store actor, timestamped JSON, ~$0.70/1k. The reliable one. |
+| `transcriptapi` | `TRANSCRIPT_API_KEY` (~$5/mo entry) | Realtime REST, fastest (~49ms median). The turbo pick. |
+| `apify` | `APIFY_API_TOKEN` (free $5/mo, no card) | Store actor, timestamped JSON, ~$0.70/1k. Reliable but slow (one Actor run/video). |
 | `ytdlp` | none | Subtitle-only VTT, manual-first. Often HTTP 429 from cloud IPs. |
 | `yta` | none | `youtube-transcript-api`. Frequently IP-blocked from datacenters. |
-| `supadata` | `SUPADATA_API_KEY` (100 free credits/mo) | Paid API fallback. |
+| `supadata` | `SUPADATA_API_KEY` (100 free credits/mo) | Paid API fallback, ~$0.99/1k at volume. |
+
+Paid fastest order: `transcriptapi,supadata,apify`. Full guide: [docs/TURBO.md](docs/TURBO.md).
 
 Only definitive per-video outcomes are permanent (`TranscriptNotFound`,
 removed, age-restricted). Inconclusive results retry; a blocked *fallback*
@@ -112,7 +118,7 @@ surface: [llms.txt](llms.txt). Repo rules agents must obey: [AGENTS.md](AGENTS.m
 ```
 minuta/
 ├── src/minuta/            # all code
-│   ├── transcripts/       # providers (apify, ytdlp, remote) + pipeline chain
+│   ├── transcripts/       # providers (transcriptapi, apify, ytdlp, remote) + pipeline chain
 │   ├── api.py mcp.py worker.py ingest.py search.py index.py
 │   └── settings.py db.py store.py auth.py jobs.py provider_state.py
 ├── migrations/            # Postgres + pgvector + FTS schema

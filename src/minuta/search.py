@@ -6,7 +6,7 @@ import json
 from typing import Any
 
 from minuta import embeddings, store
-from minuta.db import fetch_all, fetch_one
+from minuta.db import fetch_one, pool
 from minuta.settings import get_settings
 
 
@@ -26,11 +26,22 @@ async def search_transcripts(query: str, *, limit: int = 10, offset: int = 0,
         params["language"] = language
     vector = await embeddings.embed_query(query)
     params["vec"] = f"[{','.join(map(str, vector))}]"
-    rows = await fetch_all(
-        f"""with vec as (
-             select ch.id, 1 - (ch.embedding <=> %(vec)s::vector) as similarity
-             from chunks ch order by ch.embedding <=> %(vec)s::vector limit 200
-           )
+    params["emodel"] = settings.embedding_model
+    params["evers"] = settings.embedding_version
+    # Same-transaction SET LOCAL: the vector CTE only touches rows embedded
+    # with the active model/version, so a mid-migration mixed-dims table
+    # can never abort search with a dimension-mismatch error.
+    async with pool().connection() as conn:
+        await conn.execute("SET LOCAL hnsw.ef_search = %s", (settings.hnsw_ef_search,))
+        async with conn.cursor() as cur:
+            await cur.execute(
+                f"""with vec as (
+              select ch.id, 1 - (ch.embedding <=> %(vec)s::vector) as similarity
+              from chunks ch
+              where ch.embedding_model = %(emodel)s
+                and ch.embedding_version = %(evers)s
+              order by ch.embedding <=> %(vec)s::vector limit 200
+            )
            select ch.id, v.youtube_video_id, v.title as video_title, c.title as channel_title,
                   tv.language, tv.is_generated, ch.start_ms, ch.end_ms, ch.text,
                   coalesce(vec.similarity, 0) as similarity
@@ -43,8 +54,9 @@ async def search_transcripts(query: str, *, limit: int = 10, offset: int = 0,
              and (ch.text_tsv @@ plainto_tsquery('english', %(q)s) or vec.id is not null)
            order by coalesce(vec.similarity, 0) desc
            limit {limit} offset {offset}""",
-        params,
-    )
+                params,
+            )
+            rows = await cur.fetchall()
     results = [{
         "passage_id": str(r["id"]), "text": r["text"], "video_id": r["youtube_video_id"],
         "video_title": r["video_title"], "channel_title": r["channel_title"],

@@ -1,13 +1,16 @@
 """YouTube Data API v3: channel resolution, uploads discovery, metadata.
 
-The API key is used ONLY here, for official metadata and discovery.
-It is never passed to caption extractors (it cannot authorize them).
+API key(s) are used ONLY here, for official metadata and discovery.
+They are never passed to caption extractors (they cannot authorize them).
+Comma-separated YOUTUBE_API_KEY values rotate round-robin for quota.
 """
 
 from __future__ import annotations
 
 import re
 from typing import Any
+
+from minuta.settings import get_settings
 
 HANDLE_RE = re.compile(r"(?:youtube\.com/)?@([A-Za-z0-9._-]+)")
 CHANNEL_RE = re.compile(r"(UC[A-Za-z0-9_-]{22})")
@@ -18,12 +21,22 @@ class YouTubeQuotaExceeded(RuntimeError):
     pass
 
 
-async def _get(client, path: str, params: dict, key: str) -> dict[str, Any]:
-    from minuta.settings import get_settings
+_key_index = 0
 
+
+def _next_key() -> str:
+    """Round-robin over comma-separated YOUTUBE_API_KEY values (quota spread)."""
+    global _key_index
+    keys = get_settings().youtube_api_keys or [get_settings().youtube_api_key]
+    key = keys[_key_index % len(keys)]
+    _key_index += 1
+    return key
+
+
+async def _get(client, path: str, params: dict, key: str) -> dict[str, Any]:
     resp = await client.get(
         f"https://www.googleapis.com/youtube/v3/{path}",
-        params={**params, "key": get_settings().youtube_api_key},
+        params={**params, "key": _next_key()},
     )
     if resp.status_code == 403 and "quota" in resp.text.lower():
         raise YouTubeQuotaExceeded(resp.text[:200])

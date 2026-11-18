@@ -34,17 +34,30 @@ class Settings(BaseSettings):
     youtube_quota_reserve_units: int = 500
 
     # Comma-separated provider order, first match wins.
-    # Known providers: apify, yta, ytdlp, supadata.
+    # Known providers: transcriptapi, supadata, apify, yta, ytdlp.
     transcript_provider_order: str = "yta"
     transcript_languages: str = "en"
     transcript_max_attempts: int = 6
     supadata_api_key: str = ""
     apify_api_token: str = ""
+    transcript_api_key: str = ""
 
+    # ------------------------------------------------------------------
+    # Embeddings: local ONNX by default; paid API when EMBEDDING_PROVIDER=openai.
+    # openai mode speaks OpenAI-compatible /v1/embeddings (OpenAI, Voyage,
+    # TEI, OpenRouter). Switching models/dims requires migration 002 plus a
+    # re-embed (see docs/TURBO.md); never mix dims without a version bump.
+    # ------------------------------------------------------------------
+    embedding_provider: str = "local"
+    embedding_api_key: str = ""
+    embedding_base_url: str = "https://api.openai.com/v1"
     embedding_model: str = "BAAI/bge-small-en-v1.5"
     embedding_version: str = "v1"
     embedding_dimensions: int = 384
     embedding_batch_size: int = 32
+
+    # pgvector query-time recall dial (SET LOCAL per search; no rebuild).
+    hnsw_ef_search: int = 40
 
     chunk_target_chars: int = 2600
     chunk_overlap_chars: int = 350
@@ -87,6 +100,18 @@ class Settings(BaseSettings):
     def _validate_base_url(cls, v: str) -> str:
         return v.rstrip("/")
 
+    @field_validator("embedding_provider")
+    @classmethod
+    def _validate_embedding_provider(cls, v: str) -> str:
+        if v.strip().lower() not in ("local", "openai"):
+            raise ValueError("EMBEDDING_PROVIDER must be 'local' or 'openai'")
+        return v.strip().lower()
+
+    @property
+    def youtube_api_keys(self) -> list[str]:
+        """Comma-separated YOUTUBE_API_KEY rotates quota across keys."""
+        return [k.strip() for k in self.youtube_api_key.split(",") if k.strip()]
+
     @property
     def tx_provider_order(self) -> list[str]:
         return [p.strip() for p in self.transcript_provider_order.split(",") if p.strip()]
@@ -107,6 +132,8 @@ class Settings(BaseSettings):
             self.research_api_key,
             self.supadata_api_key,
             self.apify_api_token,
+            self.transcript_api_key,
+            self.embedding_api_key,
             self.admin_bootstrap_token,
         ]
         if parsed := urlparse(self.database_url):

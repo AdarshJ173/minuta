@@ -88,6 +88,89 @@ class YouTubeTranscriptApiProvider:
             raise TranscriptTemporaryError(f"{type(exc).__name__}: {exc}") from exc
 
 
+class TranscriptApiProvider:
+    """Fastest paid captions (transcriptapi.com): realtime REST, ~49ms median.
+
+    Enabled only when TRANSCRIPT_API_KEY is set. Error mapping follows
+    https://transcriptapi.com/docs/api: 404 codes are definitive except
+    live_not_started (retry after airing); 408/429/5xx are transient;
+    401 means the key is bad (disabled); 402 means credits ran out.
+    """
+
+    name = "transcriptapi"
+    _API = "https://transcriptapi.com/api/v2"
+
+    _DEFINITIVE_404 = frozenset({
+        "no_captions", "video_unavailable", "age_restricted",
+        "no_transcript_for_requested_languages",
+    })
+
+    def __init__(self, api_key: str = "", *, transport=None) -> None:
+        self.api_key = api_key
+        self._transport = transport
+
+    def enabled(self) -> bool:
+        return bool(self.api_key)
+
+    async def fetch(self, video_id: str, languages: list[str]) -> RawTranscript:
+        import httpx
+
+        if not self.api_key:
+            raise TranscriptProviderDisabled("TRANSCRIPT_API_KEY is not set")
+        langs = ",".join((languages or ["en"])[:10])
+        async with httpx.AsyncClient(timeout=30, transport=self._transport) as client:
+            resp = await client.get(
+                f"{self._API}/youtube/transcript",
+                params={"video_url": video_id, "language": langs},
+                headers={"Authorization": f"Bearer {self.api_key}"},
+            )
+        if resp.status_code == 200:
+            return self._to_raw(resp.json())
+        if resp.status_code == 401:
+            raise TranscriptProviderDisabled("transcriptapi rejected the API key")
+        if resp.status_code == 402:
+            raise TranscriptTemporaryError("transcriptapi plan exhausted; top up credits")
+        if resp.status_code in (408, 429, 500, 502, 503, 504):
+            raise TranscriptTemporaryError(f"transcriptapi {resp.status_code}")
+        if resp.status_code == 404:
+            try:
+                code = str(resp.json().get("code") or "")
+            except Exception:
+                code = ""
+            if code == "live_not_started":
+                raise TranscriptTemporaryError("transcriptapi: live stream has not aired yet")
+            if code in self._DEFINITIVE_404 or not code:
+                raise TranscriptUnavailable(f"transcriptapi 404: {code or 'no transcript'}")
+            raise TranscriptUnavailable(f"transcriptapi 404: {code}")
+        if resp.status_code >= 400:
+            raise TranscriptUnavailable(f"transcriptapi {resp.status_code}: {resp.text[:200]}")
+        raise TranscriptTemporaryError(f"transcriptapi unexpected {resp.status_code}")
+
+    @staticmethod
+    def _to_raw(payload: dict[str, Any]) -> RawTranscript:
+        segments: list[Segment] = []
+        for item in payload.get("transcript") or []:
+            if not isinstance(item, dict):
+                continue
+            if not (text := str(item.get("text", "") or "").strip()):
+                continue
+            try:
+                start_ms = int(round(float(item.get("start", 0)) * 1000))
+                duration_ms = int(round(float(item.get("duration", 0) or 0) * 1000))
+            except (TypeError, ValueError):
+                continue
+            segments.append(Segment(text=text, start_ms=start_ms, end_ms=start_ms + duration_ms))
+        if not segments:
+            raise TranscriptUnavailable("transcriptapi returned no usable segments")
+        language = str(payload.get("language") or "en")
+        return RawTranscript(
+            language=language, segments=segments,
+            source="transcriptapi", provider="transcriptapi",
+            is_generated=language.startswith("asr"), is_timed=True,
+            raw_bytes=json.dumps(payload).encode(), raw_format="json",
+        )
+
+
 class SupadataProvider:
     """Optional paid API. Enabled only when SUPADATA_API_KEY is set."""
 
