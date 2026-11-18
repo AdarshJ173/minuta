@@ -5,7 +5,8 @@ YouTube ──Data API──▶ discovery (channels, uploads, metadata)
    │                     (API key = metadata only; never unlocks captions)
    │
    ├── transcript providers (first configured success wins)
-   │     apify ──▶ Store actor, timestamped JSON, ~$0.70/1k
+   │     transcriptapi ─▶ realtime REST, fastest (~49ms median, 200/min)
+   │     apify ──▶ Store actor, timestamped JSON, ~$0.70/1k (slow: 1 run/video)
    │     ytdlp ──▶ subtitle-only VTT, manual-first, rolling-dedupe
    │     yta   ──▶ youtube-transcript-api (often IP-blocked)
    │     supadata ─▶ paid API, 100 free credits/mo
@@ -13,8 +14,9 @@ YouTube ──Data API──▶ discovery (channels, uploads, metadata)
    ▼
 canonical doc (JSON + Markdown, content-hashed, idempotent)
    ├──▶ R2 private bucket (content-addressed keys)
-   └──▶ Postgres version row ──▶ chunker ──▶ ONNX embeddings ──▶ chunks
-         (pgvector HNSW + FTS + trigram)
+   └──▶ Postgres version row ──▶ chunker ──▶ embeddings ──▶ chunks
+         (local ONNX default; OpenAI-compatible API in turbo)
+         (pgvector HNSW + FTS + trigram; HNSW_EF_SEARCH per query)
    │
    ├──▶ REST  (/v1/search, /v1/videos/:id/transcript)
    └──▶ MCP   (Streamable HTTP, same Bearer auth)

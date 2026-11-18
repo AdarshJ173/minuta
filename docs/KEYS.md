@@ -9,11 +9,14 @@ You bring all credentials. Nothing ships with the repo.
 | `YOUTUBE_API_KEY` | Google Cloud Console → YouTube Data API v3 | discovery + metadata only | yes |
 | `ADMIN_BOOTSTRAP_TOKEN` | you invent it (`openssl rand -hex 32`) | first admin login, then create scoped keys | yes |
 | `APIFY_API_TOKEN` | console.apify.com → Settings → API & Integrations | transcript provider `apify` | pick ≥1 provider |
+| `TRANSCRIPT_API_KEY` | transcriptapi.com dashboard → API keys | transcript provider `transcriptapi` (fastest) | pick ≥1 provider |
 | `SUPADATA_API_KEY` | supadata.ai dashboard | transcript provider `supadata` | pick ≥1 provider |
+| `EMBEDDING_API_KEY` + `EMBEDDING_BASE_URL` | OpenAI / Voyage dashboard | hosted embeddings (`EMBEDDING_PROVIDER=openai`) | turbo only |
 | (none) | — | providers `ytdlp`, `yta` need no key | free but often blocked |
 
 Set `TRANSCRIPT_PROVIDER_ORDER` to the providers you configured, e.g.
-`apify,yta` or `supadata,yta`. First configured success wins.
+`transcriptapi,supadata,apify` (turbo) or `yta` (free).
+Paying for speed? Read [TURBO.md](TURBO.md) before setting keys.
 
 ## Scoped API keys (for agents)
 
